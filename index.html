@@ -3,11 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Madura Mart - Firebase Cloud System (Kelompok 4)</title>
+    <title>Madura Mart - Sistem Persediaan S1 Akuntansi (Cloud)</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { --bg-body: #F8FAFC; --bg-surface: #FFFFFF; --border-color: #E2E8F0; --text-main: #0F172A; --text-muted: #64748B; }
+        :root {
+            --bg-body: #F8FAFC;       
+            --bg-surface: #FFFFFF;    
+            --border-color: #E2E8F0;  
+            --text-main: #0F172A;     
+            --text-muted: #64748B;    
+        }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background-color: var(--bg-body); color: var(--text-main); overflow-x: hidden; }
         .sidebar { height: 100vh; background-color: var(--bg-surface); border-right: 1px solid var(--border-color); padding-top: 30px; position: fixed; width: 250px; z-index: 1000; }
         .sidebar h5 { text-align: left; font-weight: 700; padding: 0 24px; margin-bottom: 30px; color: var(--text-main); font-size: 1.1rem;}
@@ -19,62 +25,103 @@
         .content-section.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
         .header-title { font-weight: 600; font-size: 1.5rem; margin-bottom: 24px; color: var(--text-main); }
-        .card { background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 24px; }
-        .form-control { border: 1px solid var(--border-color); border-radius: 6px; padding: 10px 12px; font-size: 0.95rem;}
-        .table th { font-weight: 600; color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; }
+        .card { background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 8px; box-shadow: none; margin-bottom: 24px; }
+        .form-control, .form-select { border: 1px solid var(--border-color); border-radius: 6px; padding: 10px 12px; font-size: 0.95rem; box-shadow: none !important; }
+        .form-control:focus, .form-select:focus { border-color: var(--text-muted); }
+        .table { --bs-table-bg: transparent; margin-bottom: 0; }
+        .table th { font-weight: 600; color: var(--text-muted); border-bottom: 1px solid var(--border-color); font-size: 0.75rem; text-transform: uppercase; padding: 16px; }
+        .table td { border-bottom: 1px solid var(--border-color); vertical-align: middle; padding: 16px; font-size: 0.95rem; }
         .badge-soft-danger { background-color: #FEE2E2; color: #991B1B; padding: 6px 10px; border-radius: 6px; font-weight: 500; font-size: 0.8rem;}
         .badge-soft-success { background-color: #DCFCE7; color: #166534; padding: 6px 10px; border-radius: 6px; font-weight: 500; font-size: 0.8rem;}
-        .btn-minimal { background-color: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 6px; padding: 8px 16px;}
-        .btn-dark-minimal { background-color: var(--text-main); color: #fff; border: none; border-radius: 6px; padding: 10px 16px;}
-        .status-awan { position: fixed; top: 10px; right: 20px; font-size: 0.85rem; color: #166534; background: #DCFCE7; padding: 5px 15px; border-radius: 20px; font-weight: bold; z-index: 9999; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .btn-minimal { background-color: var(--bg-surface); border: 1px solid var(--border-color); color: var(--text-main); border-radius: 6px; padding: 8px 16px; font-size: 0.9rem;}
+        .btn-minimal:hover { background-color: var(--bg-body); }
+        .btn-dark-minimal { background-color: var(--text-main); color: #fff; border: none; border-radius: 6px; padding: 10px 16px; font-weight: 500;}
+        .btn-dark-minimal:hover { background-color: #334155; color: #fff; }
+        
+        .status-awan { position: fixed; top: 10px; right: 20px; font-size: 0.85rem; color: #166534; background: #DCFCE7; padding: 8px 15px; border-radius: 20px; font-weight: bold; z-index: 9999; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        
+        /* CSS Khusus Cetak Laporan */
+        @media print {
+            .sidebar, .btn, .input-group, form, .status-awan { display: none !important; }
+            .main-content { margin-left: 0; padding: 0; }
+            .card { border: none; }
+            body { background-color: white; }
+            .print-header { display: block !important; text-align: center; margin-bottom: 30px; border-bottom: 2px solid black; padding-bottom: 10px;}
+        }
+        .print-header { display: none; }
     </style>
 </head>
 <body>
 
-    <div class="status-awan"><i class="fas fa-cloud-check me-2"></i> Terhubung ke Database Kelompok 4</div>
+    <div class="status-awan"><i class="fas fa-cloud-check me-2"></i> Tersambung ke Firebase Kelompok 4</div>
 
     <div class="sidebar">
-        <h5><i class="fas fa-store me-2"></i> Madura Mart</h5>
+        <h5 id="brandSidebar"><i class="fas fa-store me-2"></i> Madura Mart</h5>
         <a onclick="window.showSection('dashboard', this)" class="menu-link active"><i class="fas fa-chart-pie"></i> 1. Dashboard</a>
         <a onclick="window.showSection('master-data', this)" class="menu-link"><i class="fas fa-layer-group"></i> 2. Master Data</a>
         <a onclick="window.showSection('transaksi', this)" class="menu-link"><i class="fas fa-receipt"></i> 3. Transaksi</a>
+        <a onclick="window.showSection('inventori', this)" class="menu-link"><i class="fas fa-boxes"></i> 4. Inventori & Gudang</a>
+        <a onclick="window.showSection('laporan', this)" class="menu-link"><i class="fas fa-file-invoice"></i> 5. Laporan</a>
+        <a onclick="window.showSection('pengaturan', this)" class="menu-link"><i class="fas fa-sliders-h"></i> 6. Pengaturan</a>
     </div>
 
     <div class="main-content">
 
+        <div class="print-header">
+            <h2 id="printNamaToko" style="font-weight: bold; margin-bottom: 5px;">Madura Mart</h2>
+            <p id="printAlamatToko" style="margin-bottom: 0;">Alamat Toko</p>
+            <p id="printJenisLaporan" style="font-weight: bold; margin-top: 10px;"></p>
+        </div>
+
         <div id="dashboard" class="content-section active">
-            <h2 class="header-title">Ikhtisar Cloud Real-time</h2>
+            <h2 class="header-title">Ikhtisar Operasional Cloud</h2>
             <div class="row">
-                <div class="col-md-6">
-                    <div class="card"><div class="card-body p-4 border-start border-4 border-success">
-                        <p class="text-success mb-1 fw-bold" style="font-size: 0.85rem;">TOTAL ITEM TERDAFTAR (FIREBASE)</p>
-                        <h2 id="totalBarangDisplay" class="mb-0">Memuat...</h2>
+                <div class="col-md-4">
+                    <div class="card"><div class="card-body p-4">
+                        <p class="text-muted mb-1 fw-bold" style="font-size: 0.85rem;">TOTAL ITEM TERDAFTAR</p>
+                        <h2 id="totalBarangDisplay" class="mb-0">0</h2>
                     </div></div>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-4">
+                    <div class="card"><div class="card-body p-4 border-start border-4 border-success">
+                        <p class="text-success mb-1 fw-bold" style="font-size: 0.85rem;">OMZET HARI INI</p>
+                        <h2 id="totalOmzetDisplay" class="mb-0">Rp 0</h2>
+                    </div></div>
+                </div>
+                <div class="col-md-4">
                     <div class="card"><div class="card-body p-4 border-start border-4 border-danger">
                         <p class="text-danger mb-1 fw-bold" style="font-size: 0.85rem;">STOK KRITIS (< 15)</p>
                         <h2 class="mb-0"><span id="stokKritisDisplay">0</span> <span class="fs-6 text-muted fw-normal">Item SKU</span></h2>
                     </div></div>
                 </div>
             </div>
-            <div class="alert alert-primary mt-2">
-                <i class="fas fa-info-circle me-2"></i> <strong>Mode Real-time Aktif:</strong> Cobalah buka halaman ini di dua perangkat yang berbeda. Saat Anda menambah data di perangkat satu, tabel di perangkat dua akan langsung berubah tanpa perlu di-<em>refresh</em>!
+            
+            <div class="card">
+                <div class="card-body p-4">
+                    <h6 class="mb-3">Jurnal Penjualan Real-time (5 Terakhir)</h6>
+                    <table class="table">
+                        <thead><tr><th>Waktu</th><th>ID Transaksi</th><th>Rincian Item</th><th class="text-end">Total Nilai</th></tr></thead>
+                        <tbody id="tabelRiwayatDashboard">
+                            <tr><td colspan="4" class="text-center text-muted py-3">Menarik data dari server...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
         <div id="master-data" class="content-section">
-            <h2 class="header-title">Data Induk Persediaan (Cloud)</h2>
+            <h2 class="header-title">Data Induk Persediaan</h2>
             <div class="card">
                 <div class="card-body p-4">
-                    <h6 class="mb-4">Form Entri Barang Baru</h6>
-                    <form onsubmit="event.preventDefault(); window.simpanKeFirebase();">
+                    <h6 class="mb-4" id="formTitle">Form Entri Barang Baru</h6>
+                    <form id="formBarang" onsubmit="event.preventDefault(); window.prosesSimpan();">
                         <div class="row g-3">
                             <div class="col-md-2"><input type="text" id="inputKode" class="form-control" placeholder="Kode SKU" required></div>
-                            <div class="col-md-4"><input type="text" id="inputNama" class="form-control" placeholder="Nama Barang" required></div>
+                            <div class="col-md-3"><input type="text" id="inputNama" class="form-control" placeholder="Nama Barang" required></div>
+                            <div class="col-md-2"><input type="text" id="inputKategori" class="form-control" placeholder="Kategori" required></div>
                             <div class="col-md-2"><input type="number" id="inputHarga" class="form-control" placeholder="Harga Jual" required></div>
-                            <div class="col-md-2"><input type="number" id="inputStok" class="form-control" placeholder="Stok" required></div>
-                            <div class="col-md-2"><button type="submit" class="btn btn-dark-minimal w-100"><i class="fas fa-cloud-upload-alt me-2"></i> Simpan</button></div>
+                            <div class="col-md-1"><input type="number" id="inputStok" class="form-control" placeholder="Stok" required></div>
+                            <div class="col-md-2 d-flex"><button type="submit" class="btn btn-dark-minimal w-100" id="btnSubmit">Simpan</button><button type="button" class="btn btn-minimal ms-2 d-none" id="btnBatal" onclick="window.batalEdit()">Batal</button></div>
                         </div>
                     </form>
                 </div>
@@ -82,9 +129,9 @@
             <div class="card">
                 <div class="card-body p-0">
                     <table class="table">
-                        <thead><tr><th>Kode SKU</th><th>Nama Barang</th><th>Harga Jual</th><th>Stok</th><th class="text-end">Aksi</th></tr></thead>
+                        <thead><tr><th>Kode SKU</th><th>Nama Barang</th><th>Kategori</th><th>Harga Jual</th><th>Stok</th><th class="text-end">Aksi</th></tr></thead>
                         <tbody id="tabelDataBarang">
-                            <tr><td colspan="5" class="text-center py-4"><i class="fas fa-spinner fa-spin me-2"></i> Menyinkronkan dengan Firestore...</td></tr>
+                            <tr><td colspan="6" class="text-center text-muted py-3">Menarik data dari server...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -93,21 +140,105 @@
 
         <div id="transaksi" class="content-section">
             <h2 class="header-title">Point of Sales (Kasir)</h2>
-            <div class="card"><div class="card-body p-4 text-center text-muted">
-                Modul Kasir akan segera diintegrasikan penuh ke Firebase setelah uji coba Master Data berhasil.
-            </div></div>
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="card h-100"><div class="card-body p-4">
+                        <div class="input-group mb-4">
+                            <select id="pilihBarangKasir" class="form-select"></select>
+                            <input type="number" id="qtyKasir" class="form-control" placeholder="Qty" value="1" min="1" style="max-width: 100px;">
+                            <button class="btn btn-dark-minimal" type="button" onclick="window.tambahKeKeranjang()">Tambah</button>
+                        </div>
+                        <table class="table">
+                            <thead><tr><th>Item</th><th>Harga</th><th>Qty</th><th class="text-end">Subtotal</th><th class="text-center">Aksi</th></tr></thead>
+                            <tbody id="tabelKeranjang"></tbody>
+                        </table>
+                    </div></div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 bg-light border-0"><div class="card-body p-4 text-center d-flex flex-column justify-content-center">
+                        <p class="text-muted mb-1">TOTAL PEMBAYARAN</p>
+                        <h1 class="display-5 fw-bold text-dark mb-4" id="totalBayarKasir">Rp 0</h1>
+                        <button class="btn btn-dark-minimal w-100 mb-2 py-3" onclick="window.prosesTransaksi()" id="btnProsesTrx">Proses & Simpan</button>
+                        <button class="btn btn-minimal w-100" onclick="window.batalkanTransaksi()">Kosongkan</button>
+                    </div></div>
+                </div>
+            </div>
         </div>
+
+        <div id="inventori" class="content-section">
+            <h2 class="header-title">Kartu Stok (Jejak Audit Cloud)</h2>
+            <div class="card">
+                <div class="card-body p-4">
+                    <div class="alert alert-secondary mb-4 py-2" style="font-size: 0.9rem;">
+                        <i class="fas fa-shield-alt me-2"></i> Transaksi masuk, penjualan kasir, dan penyesuaian edit stok direkam dan disinkronkan di Firebase.
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead><tr><th>Waktu</th><th>Kode SKU</th><th>Referensi</th><th class="text-center">Arus</th><th class="text-center">Qty</th><th>Keterangan</th></tr></thead>
+                            <tbody id="tabelKartuStok">
+                                <tr><td colspan="6" class="text-center text-muted py-3">Menarik data dari server...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="laporan" class="content-section">
+            <h2 class="header-title">Pusat Ekspor Laporan</h2>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card h-100"><div class="card-body p-4 text-center">
+                        <i class="fas fa-exclamation-triangle fa-3x text-danger mb-3"></i>
+                        <h5 class="fw-bold">Exception Report (Stok Kritis)</h5>
+                        <p class="text-muted" style="font-size: 0.9rem;">Menampilkan daftar barang dengan sisa stok di bawah batas aman (15 Unit) untuk segera di-*restock*.</p>
+                        <button class="btn btn-minimal w-100 mt-3" onclick="window.cetakLaporan('Kritis')"><i class="fas fa-print me-2"></i> Cetak Exception Report</button>
+                    </div></div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card h-100"><div class="card-body p-4 text-center">
+                        <i class="fas fa-file-invoice-dollar fa-3x text-primary mb-3"></i>
+                        <h5 class="fw-bold">Jurnal Penjualan Kasir</h5>
+                        <p class="text-muted" style="font-size: 0.9rem;">Mencetak riwayat keseluruhan transaksi penjualan (*Point of Sales*) yang telah direkam dalam sistem.</p>
+                        <button class="btn btn-minimal w-100 mt-3" onclick="window.cetakLaporan('Penjualan')"><i class="fas fa-print me-2"></i> Cetak Laporan Penjualan</button>
+                    </div></div>
+                </div>
+            </div>
+            
+            <div id="areaCetak" style="display: none;" class="mt-4">
+                <table class="table table-bordered border-dark">
+                    <thead id="cetakHead" class="table-light border-dark"></thead>
+                    <tbody id="cetakBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="pengaturan" class="content-section">
+            <h2 class="header-title">Pengaturan Profil Entitas</h2>
+            <div class="card">
+                <div class="card-body p-4">
+                    <form onsubmit="event.preventDefault(); window.simpanPengaturan();">
+                        <div class="mb-3">
+                            <label class="text-muted mb-1" style="font-size: 0.85rem;">Nama Bisnis / Toko</label>
+                            <input type="text" id="setNamaToko" class="form-control" required>
+                        </div>
+                        <div class="mb-4">
+                            <label class="text-muted mb-1" style="font-size: 0.85rem;">Alamat Operasional</label>
+                            <textarea id="setAlamatToko" class="form-control" rows="3" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-dark-minimal"><i class="fas fa-save me-2"></i> Simpan Profil</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <script type="module">
-        // 1. IMPORT FIREBASE SDK (Menggunakan versi 12.15.0 sesuai milik Anda)
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-analytics.js";
-        
-        // Import khusus untuk Firestore Database (Wajib ditambahkan)
-        import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
 
-        // 2. KONFIGURASI FIREBASE KELOMPOK 4 KELAS C
+        // Konfigurasi Kelompok 4
         const firebaseConfig = {
             apiKey: "AIzaSyB_H1OzVy0ElJf6QEbmrHgsC_i7Vvi0Bbo",
             authDomain: "kelompok-4-kelas-c.firebaseapp.com",
@@ -118,95 +249,363 @@
             measurementId: "G-8NBK1BQ41N"
         };
 
-        // 3. INISIALISASI FIREBASE
         const app = initializeApp(firebaseConfig);
-        const analytics = getAnalytics(app);
         const db = getFirestore(app);
 
-        // --- FUNGSI UI / NAVIGASI ---
+        // --- VARIABEL GLOBAL ---
+        let databaseBarang = [];
+        let databaseTransaksi = [];
+        let databasePergerakan = [];
+        let keranjangBelanja = [];
+        let editDocId = null;
+        let configToko = JSON.parse(localStorage.getItem('DB_Config_Clean')) || { nama: "Madura Mart", alamat: "Jl. Ir. Sutami No.36 A, Jebres, Surakarta" };
+
+        // --- FUNGSI UTILITAS ---
+        window.getTanggalHariIni = () => new Date().toLocaleDateString('id-ID');
+        window.formatRupiah = (angka) => "Rp " + parseInt(angka).toLocaleString('id-ID');
+
         window.showSection = function(sectionId, element) {
             document.querySelectorAll('.content-section').forEach(sec => sec.classList.remove('active'));
             document.querySelectorAll('.menu-link').forEach(link => link.classList.remove('active'));
             document.getElementById(sectionId).classList.add('active');
             if(element) element.classList.add('active');
             window.scrollTo(0,0);
+            document.getElementById('areaCetak').style.display = 'none';
         }
 
-        // --- FUNGSI TAMBAH DATA KE CLOUD FIRESTORE ---
-        window.simpanKeFirebase = async function() {
-            const dataBaru = {
-                kode: document.getElementById('inputKode').value,
-                nama: document.getElementById('inputNama').value,
-                harga: parseInt(document.getElementById('inputHarga').value),
-                stok: parseInt(document.getElementById('inputStok').value),
-                timestamp: new Date().getTime() // Menyimpan waktu penambahan
-            };
+        // --- REAL-TIME LISTENERS (Sinkronisasi Otomatis dari Firebase) ---
+        
+        // 1. Sinkronisasi Master Data
+        onSnapshot(collection(db, "MasterBarang"), (snapshot) => {
+            databaseBarang = [];
+            snapshot.forEach(doc => databaseBarang.push({ id: doc.id, ...doc.data() }));
+            // Urutkan berdasarkan waktu input
+            databaseBarang.sort((a,b) => (a.timestamp || 0) - (b.timestamp || 0));
+            renderTabelBarang();
+        });
 
-            try {
-                // Menambah dokumen baru ke koleksi 'MasterDataBarang'
-                await addDoc(collection(db, "MasterDataBarang"), dataBaru);
-                
-                // Kosongkan form setelah sukses
-                document.getElementById('inputKode').value = '';
-                document.getElementById('inputNama').value = '';
-                document.getElementById('inputHarga').value = '';
-                document.getElementById('inputStok').value = '';
-            } catch (e) {
-                console.error("Error adding document: ", e);
-                alert("Gagal menyimpan ke Cloud. Pastikan aturan (Rules) Firestore Anda mengizinkan penulisan data.");
-            }
-        }
+        // 2. Sinkronisasi Transaksi
+        onSnapshot(collection(db, "Transaksi"), (snapshot) => {
+            databaseTransaksi = [];
+            snapshot.forEach(doc => databaseTransaksi.push({ id: doc.id, ...doc.data() }));
+            // Urutkan transaksi terbaru di atas
+            databaseTransaksi.sort((a,b) => (b.timestamp || 0) - (a.timestamp || 0));
+            renderDashboard();
+        });
 
-        // --- FUNGSI HAPUS DATA DARI CLOUD FIRESTORE ---
-        window.hapusDariFirebase = async function(docId) {
-            if(confirm('Hapus item ini secara permanen dari Database Kelompok 4?')) {
-                try {
-                    await deleteDoc(doc(db, "MasterDataBarang", docId));
-                } catch (e) {
-                    console.error("Error deleting document: ", e);
-                    alert("Gagal menghapus data.");
-                }
-            }
-        }
+        // 3. Sinkronisasi Kartu Stok
+        onSnapshot(collection(db, "Pergerakan"), (snapshot) => {
+            databasePergerakan = [];
+            snapshot.forEach(doc => databasePergerakan.push({ id: doc.id, ...doc.data() }));
+            // Urutkan pergerakan terbaru di atas
+            databasePergerakan.sort((a,b) => (b.timestamp || 0) - (a.timestamp || 0));
+            renderKartuStok();
+        });
 
-        // --- REAL-TIME LISTENER (MENARIK DATA OTOMATIS) ---
-        onSnapshot(collection(db, "MasterDataBarang"), (querySnapshot) => {
+        // --- FUNGSI RENDER UI ---
+
+        function renderTabelBarang() {
             const tabel = document.getElementById('tabelDataBarang');
-            tabel.innerHTML = '';
-            
-            let totalItem = 0;
+            tabel.innerHTML = ''; 
             let stokKritis = 0;
 
-            querySnapshot.forEach((docSnap) => {
-                const barang = docSnap.data();
-                const docId = docSnap.id; // ID Unik dari Firestore
-                
-                totalItem++;
+            databaseBarang.forEach((barang) => {
+                let badgeClass = barang.stok < 15 ? 'badge-soft-danger' : 'badge-soft-success';
                 if(barang.stok < 15) stokKritis++;
                 
-                let badgeClass = barang.stok < 15 ? 'badge-soft-danger' : 'badge-soft-success';
-
                 tabel.innerHTML += `
                     <tr>
                         <td class="font-monospace text-muted">${barang.kode}</td>
                         <td class="fw-medium">${barang.nama}</td>
-                        <td>Rp ${barang.harga.toLocaleString('id-ID')}</td>
+                        <td>${barang.kategori}</td>
+                        <td>${window.formatRupiah(barang.harga)}</td>
                         <td><span class="${badgeClass}">${barang.stok} Unit</span></td>
                         <td class="text-end">
-                            <button onclick="window.hapusDariFirebase('${docId}')" class="btn btn-minimal btn-sm text-danger" title="Hapus dari Firebase"><i class="fas fa-trash-alt"></i></button>
+                            <button onclick="window.siapkanEdit('${barang.id}')" class="btn btn-minimal btn-sm"><i class="fas fa-pen"></i></button>
+                            <button onclick="window.hapusBarang('${barang.id}')" class="btn btn-minimal btn-sm text-danger ms-1"><i class="fas fa-trash-alt"></i></button>
                         </td>
                     </tr>
                 `;
             });
+            
+            if(databaseBarang.length === 0) tabel.innerHTML = '<tr><td colspan="6" class="text-center">Data kosong.</td></tr>';
 
-            if(totalItem === 0) {
-                tabel.innerHTML = '<tr><td colspan="5" class="text-center py-4">Database Kelompok 4 masih kosong. Silakan tambah barang baru di atas.</td></tr>';
+            document.getElementById('totalBarangDisplay').innerText = databaseBarang.length;
+            document.getElementById('stokKritisDisplay').innerText = stokKritis;
+            
+            // Perbarui pilihan di Kasir
+            const select = document.getElementById('pilihBarangKasir');
+            select.innerHTML = '<option value="" disabled selected>Pilih Barang (Hanya yang tersedia)...</option>';
+            databaseBarang.forEach((b) => {
+                if(b.stok > 0) select.innerHTML += `<option value="${b.kode}">${b.kode} - ${b.nama} (Sisa: ${b.stok})</option>`;
+            });
+        }
+
+        function renderDashboard() {
+            let totalOmzetHariIni = 0; 
+            const tanggalSekarang = window.getTanggalHariIni();
+            const tabel = document.getElementById('tabelRiwayatDashboard'); 
+            tabel.innerHTML = '';
+            
+            databaseTransaksi.forEach((trx, index) => {
+                if(trx.tanggalMurni === tanggalSekarang) { totalOmzetHariIni += trx.total; }
+                if(index < 5) {
+                    tabel.innerHTML += `<tr>
+                        <td class="text-muted" style="font-size: 0.85rem;">${trx.waktuLengkap}</td>
+                        <td class="font-monospace">${trx.id}</td>
+                        <td class="text-muted" style="font-size: 0.85rem;">${trx.item}</td>
+                        <td class="text-end fw-bold">${window.formatRupiah(trx.total)}</td>
+                    </tr>`;
+                }
+            });
+            if(databaseTransaksi.length === 0) tabel.innerHTML = '<tr><td colspan="4" class="text-center">Belum ada transaksi direkam.</td></tr>';
+            document.getElementById('totalOmzetDisplay').innerText = window.formatRupiah(totalOmzetHariIni);
+        }
+
+        function renderKartuStok() {
+            const tabel = document.getElementById('tabelKartuStok');
+            tabel.innerHTML = '';
+            databasePergerakan.forEach(log => {
+                let badgeArus = log.arus === "MASUK" ? '<span class="badge badge-soft-success">MASUK</span>' : '<span class="badge badge-soft-danger">KELUAR</span>';
+                let warnaQty = log.arus === "MASUK" ? 'text-success' : 'text-danger';
+                tabel.innerHTML += `
+                    <tr>
+                        <td class="text-muted" style="font-size: 0.85rem;">${log.waktu}</td>
+                        <td class="font-monospace fw-bold">${log.kode}</td>
+                        <td class="font-monospace">${log.referensi}</td>
+                        <td class="text-center">${badgeArus}</td>
+                        <td class="text-center fw-bold ${warnaQty}">${log.qty}</td>
+                        <td class="text-muted">${log.keterangan}</td>
+                    </tr>
+                `;
+            });
+            if(databasePergerakan.length === 0) tabel.innerHTML = '<tr><td colspan="6" class="text-center">Buku besar persediaan masih kosong.</td></tr>';
+        }
+
+        // --- FUNGSI CRUD KE FIREBASE ---
+
+        window.catatPergerakan = async function(kodeSku, referensi, arus, qty, keterangan) {
+            await addDoc(collection(db, "Pergerakan"), {
+                waktu: new Date().toLocaleString('id-ID'),
+                kode: kodeSku, referensi: referensi, arus: arus, qty: qty, keterangan: keterangan, timestamp: Date.now()
+            });
+        }
+
+        window.prosesSimpan = async function() {
+            const dataForm = {
+                kode: document.getElementById('inputKode').value,
+                nama: document.getElementById('inputNama').value,
+                kategori: document.getElementById('inputKategori').value,
+                harga: parseInt(document.getElementById('inputHarga').value),
+                stok: parseInt(document.getElementById('inputStok').value)
+            };
+
+            const btnSubmit = document.getElementById('btnSubmit');
+            btnSubmit.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
+            btnSubmit.disabled = true;
+
+            try {
+                if(!editDocId) {
+                    // Tambah Baru
+                    dataForm.timestamp = Date.now();
+                    await addDoc(collection(db, "MasterBarang"), dataForm);
+                    window.catatPergerakan(dataForm.kode, "SYS-INIT", "MASUK", dataForm.stok, "Setup Stok Awal");
+                } else {
+                    // Update Edit
+                    let oldData = databaseBarang.find(b => b.id === editDocId);
+                    let selisih = dataForm.stok - oldData.stok;
+                    await updateDoc(doc(db, "MasterBarang", editDocId), dataForm);
+                    
+                    if(selisih !== 0) {
+                        let jenisArus = selisih > 0 ? "MASUK" : "KELUAR";
+                        window.catatPergerakan(dataForm.kode, "SYS-ADJ", jenisArus, Math.abs(selisih), "Penyesuaian Stok (Edit Master)");
+                    }
+                }
+                window.batalEdit();
+            } catch (e) {
+                console.error("Error writing document: ", e);
+                alert("Terjadi kesalahan saat menghubungi server Firebase.");
             }
 
-            // Update angka di Dashboard
-            document.getElementById('totalBarangDisplay').innerText = totalItem;
-            document.getElementById('stokKritisDisplay').innerText = stokKritis;
-        });
+            btnSubmit.innerHTML = 'Simpan';
+            btnSubmit.disabled = false;
+        }
+
+        window.siapkanEdit = function(docId) {
+            editDocId = docId;
+            const b = databaseBarang.find(item => item.id === docId);
+            document.getElementById('inputKode').value = b.kode;
+            document.getElementById('inputNama').value = b.nama;
+            document.getElementById('inputKategori').value = b.kategori;
+            document.getElementById('inputHarga').value = b.harga;
+            document.getElementById('inputStok').value = b.stok;
+            document.getElementById('inputKode').setAttribute('readonly', true); 
+            document.getElementById('formTitle').innerText = "Perbarui Data";
+            document.getElementById('btnSubmit').innerText = "Simpan Perubahan";
+            document.getElementById('btnBatal').classList.remove('d-none');
+        }
+
+        window.batalEdit = function() {
+            editDocId = null;
+            document.getElementById('formBarang').reset();
+            document.getElementById('inputKode').removeAttribute('readonly');
+            document.getElementById('formTitle').innerText = "Form Entri Barang Baru";
+            document.getElementById('btnSubmit').innerText = "Simpan";
+            document.getElementById('btnBatal').classList.add('d-none');
+        }
+
+        window.hapusBarang = async function(docId) {
+            if(confirm('Hapus SKU ini secara permanen dari Cloud?')) {
+                await deleteDoc(doc(db, "MasterBarang", docId));
+            }
+        }
+
+        // --- FUNGSI KASIR (TRANSAKSI) ---
+        window.tambahKeKeranjang = function() {
+            const selectKode = document.getElementById('pilihBarangKasir').value;
+            const qty = parseInt(document.getElementById('qtyKasir').value);
+
+            if(!selectKode || isNaN(qty) || qty <= 0) return alert("Validasi gagal.");
+
+            const barangDb = databaseBarang.find(b => b.kode === selectKode);
+            let itemDiKeranjang = keranjangBelanja.find(item => item.kode === selectKode);
+            let qtySaatIni = itemDiKeranjang ? itemDiKeranjang.qty : 0;
+
+            if((qtySaatIni + qty) > barangDb.stok) return alert(`Stok tidak cukup! Total stok fisik hanya ${barangDb.stok}.`);
+
+            if(itemDiKeranjang) {
+                itemDiKeranjang.qty += qty;
+                itemDiKeranjang.subtotal = itemDiKeranjang.qty * itemDiKeranjang.harga;
+            } else {
+                keranjangBelanja.push({ 
+                    idReal: barangDb.id, kode: barangDb.kode, nama: barangDb.nama, 
+                    harga: barangDb.harga, qty: qty, subtotal: barangDb.harga * qty 
+                });
+            }
+
+            document.getElementById('pilihBarangKasir').value = "";
+            document.getElementById('qtyKasir').value = 1;
+            window.renderKeranjang();
+        }
+
+        window.renderKeranjang = function() {
+            const tabel = document.getElementById('tabelKeranjang');
+            tabel.innerHTML = ''; let grandTotal = 0;
+            keranjangBelanja.forEach((item, index) => {
+                grandTotal += item.subtotal;
+                tabel.innerHTML += `<tr>
+                    <td class="fw-medium">${item.nama}</td>
+                    <td class="text-muted">${window.formatRupiah(item.harga)}</td>
+                    <td>${item.qty}</td>
+                    <td class="text-end fw-bold">${window.formatRupiah(item.subtotal)}</td>
+                    <td class="text-center"><button onclick="window.hapusDariKeranjang(${index})" class="btn btn-sm btn-minimal text-danger"><i class="fas fa-times"></i></button></td>
+                </tr>`;
+            });
+            document.getElementById('totalBayarKasir').innerText = window.formatRupiah(grandTotal);
+        }
+
+        window.hapusDariKeranjang = function(index) { keranjangBelanja.splice(index, 1); window.renderKeranjang(); }
+        window.batalkanTransaksi = function() { keranjangBelanja = []; window.renderKeranjang(); }
+
+        window.prosesTransaksi = async function() {
+            if(keranjangBelanja.length === 0) return alert("Keranjang kosong!");
+            
+            const btnProses = document.getElementById('btnProsesTrx');
+            btnProses.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
+            btnProses.disabled = true;
+            
+            let totalTrx = 0; let rincianItem = [];
+            const idTrx = "TRX-" + Math.floor(Math.random() * 90000 + 10000);
+            
+            try {
+                // 1. Potong stok dan catat pergerakan
+                for (const item of keranjangBelanja) {
+                    let brgAsli = databaseBarang.find(b => b.kode === item.kode);
+                    if(brgAsli) {
+                        await updateDoc(doc(db, "MasterBarang", brgAsli.id), { stok: brgAsli.stok - item.qty });
+                        await window.catatPergerakan(item.kode, idTrx, "KELUAR", item.qty, "Penjualan Kasir");
+                    }
+                    totalTrx += item.subtotal;
+                    rincianItem.push(`${item.nama} (${item.qty})`);
+                }
+
+                // 2. Simpan Rekap Transaksi
+                await addDoc(collection(db, "Transaksi"), {
+                    id: idTrx, 
+                    waktuLengkap: new Date().toLocaleString('id-ID'),
+                    tanggalMurni: window.getTanggalHariIni(), 
+                    item: rincianItem.join(", "), 
+                    total: totalTrx,
+                    timestamp: Date.now()
+                });
+
+                window.batalkanTransaksi(); 
+                alert(`Transaksi Sukses!\nNo. Faktur: ${idTrx}`);
+                
+            } catch (error) {
+                console.error("Transaksi Error: ", error);
+                alert("Gagal memproses transaksi. Cek koneksi Anda.");
+            }
+
+            btnProses.innerHTML = 'Proses & Simpan';
+            btnProses.disabled = false;
+        }
+
+        // --- FUNGSI PENGATURAN & LAPORAN ---
+        window.muatPengaturanToko = function() {
+            document.getElementById('brandSidebar').innerHTML = `<i class="fas fa-store me-2"></i> ${configToko.nama}`;
+            document.getElementById('printNamaToko').innerText = configToko.nama.toUpperCase();
+            document.getElementById('printAlamatToko').innerText = configToko.alamat;
+            document.getElementById('setNamaToko').value = configToko.nama;
+            document.getElementById('setAlamatToko').value = configToko.alamat;
+        }
+
+        window.simpanPengaturan = function() {
+            configToko.nama = document.getElementById('setNamaToko').value;
+            configToko.alamat = document.getElementById('setAlamatToko').value;
+            localStorage.setItem('DB_Config_Clean', JSON.stringify(configToko));
+            window.muatPengaturanToko();
+            alert("Profil entitas berhasil diperbarui.");
+        }
+
+        window.cetakLaporan = function(jenis) {
+            const areaCetak = document.getElementById('areaCetak');
+            const head = document.getElementById('cetakHead');
+            const body = document.getElementById('cetakBody');
+            
+            head.innerHTML = ''; body.innerHTML = '';
+            areaCetak.style.display = 'block';
+
+            if(jenis === 'Kritis') {
+                document.getElementById('printJenisLaporan').innerText = "EXCEPTION REPORT (DAFTAR STOK KRITIS)";
+                head.innerHTML = `<tr><th>Kode SKU</th><th>Nama Barang</th><th>Kategori</th><th>Sisa Stok</th></tr>`;
+                databaseBarang.forEach(b => {
+                    if(b.stok < 15) body.innerHTML += `<tr><td class="font-monospace">${b.kode}</td><td>${b.nama}</td><td>${b.kategori}</td><td class="fw-bold text-danger">${b.stok} Unit</td></tr>`;
+                });
+                if(body.innerHTML === '') body.innerHTML = `<tr><td colspan="4" class="text-center">Tidak ada barang dengan stok kritis.</td></tr>`;
+                
+            } else if (jenis === 'Penjualan') {
+                document.getElementById('printJenisLaporan').innerText = "LAPORAN JURNAL PENJUALAN KASIR (CLOUD)";
+                head.innerHTML = `<tr><th>Waktu</th><th>ID Transaksi</th><th>Rincian Item Terjual</th><th class="text-end">Total Nilai</th></tr>`;
+                let grandTotal = 0;
+                databaseTransaksi.forEach(t => {
+                    grandTotal += t.total;
+                    body.innerHTML += `<tr><td>${t.waktuLengkap}</td><td class="font-monospace">${t.id}</td><td>${t.item}</td><td class="text-end">${window.formatRupiah(t.total)}</td></tr>`;
+                });
+                if(body.innerHTML !== '') {
+                    body.innerHTML += `<tr><th colspan="3" class="text-end">TOTAL KESELURUHAN PENJUALAN:</th><th class="text-end fw-bold">${window.formatRupiah(grandTotal)}</th></tr>`;
+                } else {
+                    body.innerHTML = `<tr><td colspan="4" class="text-center">Belum ada transaksi direkam.</td></tr>`;
+                }
+            }
+
+            window.print();
+            areaCetak.style.display = 'none';
+        }
+
+        // --- SAAT APLIKASI PERTAMA DIBUKA ---
+        window.muatPengaturanToko();
+
     </script>
 </body>
 </html>
