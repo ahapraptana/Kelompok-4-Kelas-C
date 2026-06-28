@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Madura Mart - Firebase Cloud System (Kelompok 4)</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --bg-body: #F8FAFC; --bg-surface: #FFFFFF; --border-color: #E2E8F0; --text-main: #0F172A; --text-muted: #64748B; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background-color: var(--bg-body); color: var(--text-main); overflow-x: hidden; }
+        .sidebar { height: 100vh; background-color: var(--bg-surface); border-right: 1px solid var(--border-color); padding-top: 30px; position: fixed; width: 250px; z-index: 1000; }
+        .sidebar h5 { text-align: left; font-weight: 700; padding: 0 24px; margin-bottom: 30px; color: var(--text-main); font-size: 1.1rem;}
+        .sidebar a { color: var(--text-muted); text-decoration: none; padding: 12px 24px; display: block; font-weight: 500; font-size: 0.95rem; transition: all 0.2s; cursor: pointer; }
+        .sidebar a:hover, .sidebar a.active { background-color: var(--bg-body); color: var(--text-main); border-right: 3px solid var(--text-main); }
+        .sidebar a i { margin-right: 12px; width: 16px; text-align: center; }
+        .main-content { margin-left: 250px; padding: 40px; }
+        .content-section { display: none; animation: fadeIn 0.3s ease; }
+        .content-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        .header-title { font-weight: 600; font-size: 1.5rem; margin-bottom: 24px; color: var(--text-main); }
+        .card { background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 24px; }
+        .form-control { border: 1px solid var(--border-color); border-radius: 6px; padding: 10px 12px; font-size: 0.95rem;}
+        .table th { font-weight: 600; color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; }
+        .badge-soft-danger { background-color: #FEE2E2; color: #991B1B; padding: 6px 10px; border-radius: 6px; font-weight: 500; font-size: 0.8rem;}
+        .badge-soft-success { background-color: #DCFCE7; color: #166534; padding: 6px 10px; border-radius: 6px; font-weight: 500; font-size: 0.8rem;}
+        .btn-minimal { background-color: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 6px; padding: 8px 16px;}
+        .btn-dark-minimal { background-color: var(--text-main); color: #fff; border: none; border-radius: 6px; padding: 10px 16px;}
+        .status-awan { position: fixed; top: 10px; right: 20px; font-size: 0.85rem; color: #166534; background: #DCFCE7; padding: 5px 15px; border-radius: 20px; font-weight: bold; z-index: 9999; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    </style>
+</head>
+<body>
+
+    <div class="status-awan"><i class="fas fa-cloud-check me-2"></i> Terhubung ke Database Kelompok 4</div>
+
+    <div class="sidebar">
+        <h5><i class="fas fa-store me-2"></i> Madura Mart</h5>
+        <a onclick="window.showSection('dashboard', this)" class="menu-link active"><i class="fas fa-chart-pie"></i> 1. Dashboard</a>
+        <a onclick="window.showSection('master-data', this)" class="menu-link"><i class="fas fa-layer-group"></i> 2. Master Data</a>
+        <a onclick="window.showSection('transaksi', this)" class="menu-link"><i class="fas fa-receipt"></i> 3. Transaksi</a>
+    </div>
+
+    <div class="main-content">
+
+        <div id="dashboard" class="content-section active">
+            <h2 class="header-title">Ikhtisar Cloud Real-time</h2>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card"><div class="card-body p-4 border-start border-4 border-success">
+                        <p class="text-success mb-1 fw-bold" style="font-size: 0.85rem;">TOTAL ITEM TERDAFTAR (FIREBASE)</p>
+                        <h2 id="totalBarangDisplay" class="mb-0">Memuat...</h2>
+                    </div></div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card"><div class="card-body p-4 border-start border-4 border-danger">
+                        <p class="text-danger mb-1 fw-bold" style="font-size: 0.85rem;">STOK KRITIS (< 15)</p>
+                        <h2 class="mb-0"><span id="stokKritisDisplay">0</span> <span class="fs-6 text-muted fw-normal">Item SKU</span></h2>
+                    </div></div>
+                </div>
+            </div>
+            <div class="alert alert-primary mt-2">
+                <i class="fas fa-info-circle me-2"></i> <strong>Mode Real-time Aktif:</strong> Cobalah buka halaman ini di dua perangkat yang berbeda. Saat Anda menambah data di perangkat satu, tabel di perangkat dua akan langsung berubah tanpa perlu di-<em>refresh</em>!
+            </div>
+        </div>
+
+        <div id="master-data" class="content-section">
+            <h2 class="header-title">Data Induk Persediaan (Cloud)</h2>
+            <div class="card">
+                <div class="card-body p-4">
+                    <h6 class="mb-4">Form Entri Barang Baru</h6>
+                    <form onsubmit="event.preventDefault(); window.simpanKeFirebase();">
+                        <div class="row g-3">
+                            <div class="col-md-2"><input type="text" id="inputKode" class="form-control" placeholder="Kode SKU" required></div>
+                            <div class="col-md-4"><input type="text" id="inputNama" class="form-control" placeholder="Nama Barang" required></div>
+                            <div class="col-md-2"><input type="number" id="inputHarga" class="form-control" placeholder="Harga Jual" required></div>
+                            <div class="col-md-2"><input type="number" id="inputStok" class="form-control" placeholder="Stok" required></div>
+                            <div class="col-md-2"><button type="submit" class="btn btn-dark-minimal w-100"><i class="fas fa-cloud-upload-alt me-2"></i> Simpan</button></div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body p-0">
+                    <table class="table">
+                        <thead><tr><th>Kode SKU</th><th>Nama Barang</th><th>Harga Jual</th><th>Stok</th><th class="text-end">Aksi</th></tr></thead>
+                        <tbody id="tabelDataBarang">
+                            <tr><td colspan="5" class="text-center py-4"><i class="fas fa-spinner fa-spin me-2"></i> Menyinkronkan dengan Firestore...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="transaksi" class="content-section">
+            <h2 class="header-title">Point of Sales (Kasir)</h2>
+            <div class="card"><div class="card-body p-4 text-center text-muted">
+                Modul Kasir akan segera diintegrasikan penuh ke Firebase setelah uji coba Master Data berhasil.
+            </div></div>
+        </div>
+    </div>
+
+    <script type="module">
+        // 1. IMPORT FIREBASE SDK (Menggunakan versi 12.15.0 sesuai milik Anda)
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-analytics.js";
+        
+        // Import khusus untuk Firestore Database (Wajib ditambahkan)
+        import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
+
+        // 2. KONFIGURASI FIREBASE KELOMPOK 4 KELAS C
+        const firebaseConfig = {
+            apiKey: "AIzaSyB_H1OzVy0ElJf6QEbmrHgsC_i7Vvi0Bbo",
+            authDomain: "kelompok-4-kelas-c.firebaseapp.com",
+            projectId: "kelompok-4-kelas-c",
+            storageBucket: "kelompok-4-kelas-c.firebasestorage.app",
+            messagingSenderId: "465294926062",
+            appId: "1:465294926062:web:cf760941c6791c7f1913ff",
+            measurementId: "G-8NBK1BQ41N"
+        };
+
+        // 3. INISIALISASI FIREBASE
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const db = getFirestore(app);
+
+        // --- FUNGSI UI / NAVIGASI ---
+        window.showSection = function(sectionId, element) {
+            document.querySelectorAll('.content-section').forEach(sec => sec.classList.remove('active'));
+            document.querySelectorAll('.menu-link').forEach(link => link.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+            if(element) element.classList.add('active');
+            window.scrollTo(0,0);
+        }
+
+        // --- FUNGSI TAMBAH DATA KE CLOUD FIRESTORE ---
+        window.simpanKeFirebase = async function() {
+            const dataBaru = {
+                kode: document.getElementById('inputKode').value,
+                nama: document.getElementById('inputNama').value,
+                harga: parseInt(document.getElementById('inputHarga').value),
+                stok: parseInt(document.getElementById('inputStok').value),
+                timestamp: new Date().getTime() // Menyimpan waktu penambahan
+            };
+
+            try {
+                // Menambah dokumen baru ke koleksi 'MasterDataBarang'
+                await addDoc(collection(db, "MasterDataBarang"), dataBaru);
+                
+                // Kosongkan form setelah sukses
+                document.getElementById('inputKode').value = '';
+                document.getElementById('inputNama').value = '';
+                document.getElementById('inputHarga').value = '';
+                document.getElementById('inputStok').value = '';
+            } catch (e) {
+                console.error("Error adding document: ", e);
+                alert("Gagal menyimpan ke Cloud. Pastikan aturan (Rules) Firestore Anda mengizinkan penulisan data.");
+            }
+        }
+
+        // --- FUNGSI HAPUS DATA DARI CLOUD FIRESTORE ---
+        window.hapusDariFirebase = async function(docId) {
+            if(confirm('Hapus item ini secara permanen dari Database Kelompok 4?')) {
+                try {
+                    await deleteDoc(doc(db, "MasterDataBarang", docId));
+                } catch (e) {
+                    console.error("Error deleting document: ", e);
+                    alert("Gagal menghapus data.");
+                }
+            }
+        }
+
+        // --- REAL-TIME LISTENER (MENARIK DATA OTOMATIS) ---
+        onSnapshot(collection(db, "MasterDataBarang"), (querySnapshot) => {
+            const tabel = document.getElementById('tabelDataBarang');
+            tabel.innerHTML = '';
+            
+            let totalItem = 0;
+            let stokKritis = 0;
+
+            querySnapshot.forEach((docSnap) => {
+                const barang = docSnap.data();
+                const docId = docSnap.id; // ID Unik dari Firestore
+                
+                totalItem++;
+                if(barang.stok < 15) stokKritis++;
+                
+                let badgeClass = barang.stok < 15 ? 'badge-soft-danger' : 'badge-soft-success';
+
+                tabel.innerHTML += `
+                    <tr>
+                        <td class="font-monospace text-muted">${barang.kode}</td>
+                        <td class="fw-medium">${barang.nama}</td>
+                        <td>Rp ${barang.harga.toLocaleString('id-ID')}</td>
+                        <td><span class="${badgeClass}">${barang.stok} Unit</span></td>
+                        <td class="text-end">
+                            <button onclick="window.hapusDariFirebase('${docId}')" class="btn btn-minimal btn-sm text-danger" title="Hapus dari Firebase"><i class="fas fa-trash-alt"></i></button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            if(totalItem === 0) {
+                tabel.innerHTML = '<tr><td colspan="5" class="text-center py-4">Database Kelompok 4 masih kosong. Silakan tambah barang baru di atas.</td></tr>';
+            }
+
+            // Update angka di Dashboard
+            document.getElementById('totalBarangDisplay').innerText = totalItem;
+            document.getElementById('stokKritisDisplay').innerText = stokKritis;
+        });
+    </script>
+</body>
+</html>
