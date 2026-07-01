@@ -493,36 +493,69 @@
             </div>
 
             <div id="laporan" class="content-section">
-                <h2 class="header-title">Pusat Ekspor Laporan Finansial</h2>
+                <h2 class="header-title">Pusat Ekspor Laporan Finansial & Persediaan</h2>
                 <div class="row g-4">
+                    
+                    <div class="col-md-6">
+                        <div class="card h-100 mb-0"><div class="card-body p-4 text-center d-flex flex-column">
+                            <i class="fas fa-box-open fa-3x text-secondary mb-3 mt-2"></i>
+                            <h5 class="fw-bold">Laporan Master Data Barang</h5>
+                            <p class="text-muted mb-4 flex-grow-1" style="font-size: 0.9rem;">Mencetak keseluruhan data SKU aktif beserta rincian Harga Pokok Penjualan (HPP), Harga Jual, dan Kuantitas Stok Aktual.</p>
+                            <div class="d-flex flex-column gap-2 mt-auto">
+                                <button class="btn btn-minimal w-100" onclick="window.cetakLaporanNatif('Master')"><i class="fas fa-print me-2"></i> Cetak Dokumen / Kertas</button>
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-danger text-white border-0 flex-grow-1 py-2 rounded-2" onclick="window.eksporPDF('Master')"><i class="fas fa-file-pdf me-2"></i> PDF</button>
+                                    <button class="btn btn-success text-white border-0 flex-grow-1 py-2 rounded-2" onclick="window.eksporExcel('Master')"><i class="fas fa-file-excel me-2"></i> Excel</button>
+                                </div>
+                            </div>
+                        </div></div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="card h-100 mb-0"><div class="card-body p-4 text-center d-flex flex-column">
+                            <i class="fas fa-exchange-alt fa-3x text-warning mb-3 mt-2"></i>
+                            <h5 class="fw-bold">Laporan Pergerakan Inventori</h5>
+                            <p class="text-muted mb-4 flex-grow-1" style="font-size: 0.9rem;">Mencetak log arus keluar-masuk barang berdasarkan histori pencatatan Restock, Stock Opname, maupun Penjualan dari sistem POS.</p>
+                            <div class="d-flex flex-column gap-2 mt-auto">
+                                <button class="btn btn-minimal w-100" onclick="window.cetakLaporanNatif('Pergerakan')"><i class="fas fa-print me-2"></i> Cetak Dokumen / Kertas</button>
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-danger text-white border-0 flex-grow-1 py-2 rounded-2" onclick="window.eksporPDF('Pergerakan')"><i class="fas fa-file-pdf me-2"></i> PDF</button>
+                                    <button class="btn btn-success text-white border-0 flex-grow-1 py-2 rounded-2" onclick="window.eksporExcel('Pergerakan')"><i class="fas fa-file-excel me-2"></i> Excel</button>
+                                </div>
+                            </div>
+                        </div></div>
+                    </div>
+
                     <div class="col-md-6">
                         <div class="card h-100 mb-0"><div class="card-body p-4 text-center d-flex flex-column">
                             <i class="fas fa-exclamation-triangle fa-3x text-danger mb-3 mt-2"></i>
                             <h5 class="fw-bold">Exception Report (Stok Kritis)</h5>
-                            <p class="text-muted mb-4 flex-grow-1" style="font-size: 0.9rem;">Menampilkan daftar barang dengan sisa stok di bawah batas aman (15 Unit) untuk segera di-*restock*.</p>
+                            <p class="text-muted mb-4 flex-grow-1" style="font-size: 0.9rem;">Menampilkan daftar barang dengan sisa stok di bawah batas aman (15 Unit) untuk prioritas utama *restock* logistik.</p>
                             <div class="d-flex flex-column gap-2 mt-auto">
                                 <button class="btn btn-minimal w-100" onclick="window.cetakLaporanNatif('Kritis')"><i class="fas fa-print me-2"></i> Cetak Dokumen / Kertas</button>
                                 <div class="d-flex gap-2">
-                                    <button class="btn btn-danger text-white border-0 flex-grow-1 py-2 rounded-2" onclick="window.eksporPDF('Kritis')"><i class="fas fa-file-pdf me-2"></i> Ekspor PDF</button>
-                                    <button class="btn btn-success text-white border-0 flex-grow-1 py-2 rounded-2" onclick="window.eksporExcel('Kritis')"><i class="fas fa-file-excel me-2"></i> Ekspor Excel</button>
+                                    <button class="btn btn-danger text-white border-0 flex-grow-1 py-2 rounded-2" onclick="window.eksporPDF('Kritis')"><i class="fas fa-file-pdf me-2"></i> PDF</button>
+                                    <button class="btn btn-success text-white border-0 flex-grow-1 py-2 rounded-2" onclick="window.eksporExcel('Kritis')"><i class="fas fa-file-excel me-2"></i> Excel</button>
                                 </div>
                             </div>
                         </div></div>
                     </div>
+
                     <div class="col-md-6">
                         <div class="card h-100 mb-0"><div class="card-body p-4 text-center d-flex flex-column">
                             <i class="fas fa-chart-line fa-3x text-primary mb-3 mt-2"></i>
                             <h5 class="fw-bold">Jurnal Penjualan & Laba</h5>
-                            <p class="text-muted mb-4 flex-grow-1" style="font-size: 0.9rem;">Mencetak riwayat keseluruhan transaksi penjualan (*Point of Sales*) beserta rekapitulasi Omzet dan margin Laba Kotor.</p>
+                            <p class="text-muted mb-4 flex-grow-1" style="font-size: 0.9rem;">Mencetak riwayat keseluruhan transaksi penjualan (*Point of Sales*) beserta rekapitulasi nominal Omzet dan kalkulasi margin Laba Kotor.</p>
                             <div class="d-flex flex-column gap-2 mt-auto">
                                 <button class="btn btn-minimal w-100" onclick="window.cetakLaporanNatif('Penjualan')"><i class="fas fa-print me-2"></i> Cetak Dokumen / Kertas</button>
                                 <div class="d-flex gap-2">
-                                    <button class="btn btn-danger text-white border-0 flex-grow-1 py-2 rounded-2" onclick="window.eksporPDF('Penjualan')"><i class="fas fa-file-pdf me-2"></i> Ekspor PDF</button>
-                                    <button class="btn btn-success text-white border-0 flex-grow-1 py-2 rounded-2" onclick="window.eksporExcel('Penjualan')"><i class="fas fa-file-excel me-2"></i> Ekspor Excel</button>
+                                    <button class="btn btn-danger text-white border-0 flex-grow-1 py-2 rounded-2" onclick="window.eksporPDF('Penjualan')"><i class="fas fa-file-pdf me-2"></i> PDF</button>
+                                    <button class="btn btn-success text-white border-0 flex-grow-1 py-2 rounded-2" onclick="window.eksporExcel('Penjualan')"><i class="fas fa-file-excel me-2"></i> Excel</button>
                                 </div>
                             </div>
                         </div></div>
                     </div>
+
                 </div>
             </div>
 
@@ -631,7 +664,6 @@
             document.getElementById(sectionId).classList.add('active'); if(element) element.classList.add('active');
             window.scrollTo(0,0); document.getElementById('areaCetak').style.display = 'none';
             
-            // Tutup sidebar di versi mobile saat menu diklik
             if(window.innerWidth <= 992) {
                 document.getElementById('sidebarMenu').classList.remove('show');
                 document.getElementById('sidebarOverlay').classList.remove('show');
@@ -640,7 +672,6 @@
             if(sectionId === 'transaksi') setTimeout(() => document.getElementById('inputScanBarcode').focus(), 100);
         }
 
-        // --- SUB MENU INVENTORI TABS ---
         window.switchInvTab = function(divId, tabId) {
             ['divInvDash', 'divInvMasuk', 'divInvOpname', 'divInvKartu'].forEach(id => document.getElementById(id).style.display = 'none');
             ['tabInvDash', 'tabInvMasuk', 'tabInvOpname', 'tabInvKartu'].forEach(id => document.getElementById(id).classList.remove('active'));
@@ -784,7 +815,6 @@
             }
         }
 
-        // PERBAIKAN: Konfigurasi Chart.js dirubah ke Area Chart
         function updateChartData() {
             let dateMap = {};
             for(let i=6; i>=0; i--) {
@@ -800,17 +830,17 @@
             if(chartOmzetInst) chartOmzetInst.destroy();
             const ctx = document.getElementById('chartOmzet').getContext('2d');
             chartOmzetInst = new Chart(ctx, {
-                type: 'line', // Mengubah ke jenis chart garis
+                type: 'line',
                 data: { 
                     labels: labels, 
                     datasets: [{ 
                         label: 'Omzet Harian (Rp)', 
                         data: dataOmzet, 
-                        backgroundColor: 'rgba(37, 99, 235, 0.2)', // Isian area semi-transparan
-                        borderColor: 'rgba(37, 99, 235, 1)',       // Garis utama
+                        backgroundColor: 'rgba(37, 99, 235, 0.2)',
+                        borderColor: 'rgba(37, 99, 235, 1)',
                         borderWidth: 2, 
-                        fill: true,                                // Membentuk grafik area
-                        tension: 0.4                               // Efek melengkung (smooth curve)
+                        fill: true,
+                        tension: 0.4
                     }] 
                 },
                 options: { maintainAspectRatio: false, responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
@@ -827,7 +857,7 @@
             if(databasePergerakan.length === 0) tabel.innerHTML = '<tr><td colspan="6" class="text-center">Buku besar persediaan masih kosong.</td></tr>';
         }
 
-        // --- CRUD MASTER DATA ---
+        // --- CRUD MASTER DATA (DIPERBAIKI) ---
         window.catatPergerakan = async function(kodeSku, referensi, arus, qty, keterangan) {
             await addDoc(collection(db, "Pergerakan"), { waktu: new Date().toLocaleString('id-ID'), kode: kodeSku, referensi: referensi, arus: arus, qty: qty, keterangan: keterangan, timestamp: Date.now() });
         }
@@ -839,26 +869,32 @@
                 nama: document.getElementById('inputNama').value, 
                 kategori: document.getElementById('inputKategori').value, 
                 hargaBeli: parseInt(document.getElementById('inputHargaBeli').value), 
-                harga: parseInt(document.getElementById('inputHargaJual').value), 
-                stok: parseInt(document.getElementById('inputStok').value) 
+                harga: parseInt(document.getElementById('inputHargaJual').value)
+                // Stok di-handle secara terpisah tergantung mode (Baru vs Edit)
             };
             
-            if(dataForm.hargaBeli < 0 || dataForm.harga < 0 || dataForm.stok < 0) return Swal.fire('Peringatan', 'Nominal negatif tidak valid!', 'warning');
             const btnSubmit = document.getElementById('btnSubmit'); btnSubmit.disabled = true;
             try {
                 if(!editDocId) {
-                    if(databaseBarang.find(b => b.kode === dataForm.kode)) { 
-                        btnSubmit.disabled = false; return Swal.fire('Gagal!', 'Kode SKU sudah terdaftar.', 'error'); 
-                    }
+                    // MODE TAMBAH BARU
+                    dataForm.stok = parseInt(document.getElementById('inputStok').value);
+                    if(dataForm.hargaBeli < 0 || dataForm.harga < 0 || dataForm.stok < 0) { btnSubmit.disabled = false; return Swal.fire('Peringatan', 'Nominal negatif tidak valid!', 'warning'); }
+                    if(databaseBarang.find(b => b.kode === dataForm.kode)) { btnSubmit.disabled = false; return Swal.fire('Gagal!', 'Kode SKU sudah terdaftar.', 'error'); }
+                    
                     dataForm.timestamp = Date.now();
                     await addDoc(collection(db, "MasterBarang"), dataForm);
                     await window.catatPergerakan(dataForm.kode, "SYS-INIT", "MASUK", dataForm.stok, "Pencatatan SKU Baru");
                     Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'SKU Tersimpan', showConfirmButton: false, timer: 1500 });
                 } else {
-                    let oldData = databaseBarang.find(b => b.id === editDocId);
-                    let selisih = dataForm.stok - oldData.stok;
-                    await updateDoc(doc(db, "MasterBarang", editDocId), dataForm);
-                    if(selisih !== 0) await window.catatPergerakan(dataForm.kode, "SYS-ADJ", selisih > 0 ? "MASUK" : "KELUAR", Math.abs(selisih), "Penyesuaian Edit Master Data");
+                    // MODE EDIT (Stok tidak diperbarui di sini, murni mengubah harga/nama/kategori)
+                    if(dataForm.hargaBeli < 0 || dataForm.harga < 0) { btnSubmit.disabled = false; return Swal.fire('Peringatan', 'Nominal negatif tidak valid!', 'warning'); }
+                    
+                    await updateDoc(doc(db, "MasterBarang", editDocId), {
+                        nama: dataForm.nama,
+                        kategori: dataForm.kategori,
+                        hargaBeli: dataForm.hargaBeli,
+                        harga: dataForm.harga
+                    });
                     Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Data Diperbarui', showConfirmButton: false, timer: 1500 });
                 }
                 window.batalEdit();
@@ -870,19 +906,29 @@
             editDocId = docId; const b = databaseBarang.find(item => item.id === docId);
             document.getElementById('inputKode').value = b.kode; document.getElementById('inputNama').value = b.nama; document.getElementById('inputKategori').value = b.kategori; 
             document.getElementById('inputHargaBeli').value = b.hargaBeli || 0; document.getElementById('inputHargaJual').value = b.harga; document.getElementById('inputStok').value = b.stok;
+            
+            // KUNCI INPUT KODE & STOK (Hanya Hub Inventori yang boleh mengubah stok barang *existing*)
             document.getElementById('inputKode').setAttribute('readonly', true); 
+            document.getElementById('inputStok').setAttribute('readonly', true);
+            document.getElementById('inputStok').title = "Gunakan form Stock Opname di menu Hub Inventori untuk menyesuaikan stok fisik.";
+            
             document.getElementById('formTitle').innerText = "Perbarui Data"; document.getElementById('btnSubmit').innerText = "Simpan Perubahan"; document.getElementById('btnBatal').classList.remove('d-none');
             window.scrollTo(0,0);
         }
 
         window.batalEdit = function() {
-            editDocId = null; document.getElementById('formBarang').reset(); document.getElementById('inputKode').removeAttribute('readonly');
+            editDocId = null; document.getElementById('formBarang').reset(); 
+            // LEPASKAN KUNCI INPUT
+            document.getElementById('inputKode').removeAttribute('readonly');
+            document.getElementById('inputStok').removeAttribute('readonly');
+            document.getElementById('inputStok').removeAttribute('title');
+            
             document.getElementById('formTitle').innerText = "Form Register Barang Baru"; document.getElementById('btnSubmit').innerText = "Simpan"; document.getElementById('btnBatal').classList.add('d-none');
         }
 
         window.hapusBarang = async function(docId) {
             if(activeUserRole !== 'admin') return Swal.fire('Ditolak!', 'Hanya Admin.', 'error');
-            const res = await Swal.fire({ title: 'Hapus SKU?', text:'Histori audit akan tetap tersimpan tapi master data akan hilang.', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', confirmButtonText: 'Hapus' });
+            const res = await Swal.fire({ title: 'Hapus SKU?', text:'Histori pergerakan akan tetap tersimpan di jurnal, namun master data akan hilang.', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', confirmButtonText: 'Hapus' });
             if (res.isConfirmed) await deleteDoc(doc(db, "MasterBarang", docId));
         }
 
@@ -1182,7 +1228,7 @@
             Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Profil Diperbarui', showConfirmButton: false, timer: 1500 });
         }
 
-        // --- EKSPOR NATIVE / STRUK ---
+        // --- EKSPOR NATIVE / STRUK (DIPERLUAS UNTUK LAPORAN BARU) ---
         window.cetakStruk = function(idTrx, cart, subtotal, diskon, totalAkhir, metode, waktu, uangBayar = 0, kembalian = 0) {
             const areaCetak = document.getElementById('areaCetak'); const head = document.getElementById('cetakHead'); const body = document.getElementById('cetakBody');
             document.getElementById('printJenisLaporan').innerText = "STRUK PEMBELIAN";
@@ -1211,12 +1257,29 @@
             head.innerHTML = ''; body.innerHTML = ''; areaCetak.style.display = 'block';
             document.getElementById('printWaktu').innerText = "Dicetak pada: " + new Date().toLocaleString('id-ID');
 
-            if(jenis === 'Kritis') {
+            if (jenis === 'Master') {
+                document.getElementById('printJenisLaporan').innerText = "LAPORAN MASTER DATA BARANG";
+                head.innerHTML = `<tr><th style="text-align:left;">Kode SKU</th><th style="text-align:left;">Nama Barang</th><th style="text-align:left;">Kategori</th><th style="text-align:right;">HPP (Rp)</th><th style="text-align:right;">Harga Jual (Rp)</th><th style="text-align:right;">Stok</th></tr>`;
+                databaseBarang.forEach(b => { 
+                    body.innerHTML += `<tr><td style="text-align:left;">${b.kode}</td><td style="text-align:left;">${b.nama}</td><td style="text-align:left;">${b.kategori}</td><td style="text-align:right;">${window.formatRupiah(b.hargaBeli || 0)}</td><td style="text-align:right;">${window.formatRupiah(b.harga)}</td><td style="text-align:right; font-weight:bold;">${b.stok} Unit</td></tr>`; 
+                });
+                if(body.innerHTML === '') body.innerHTML = `<tr><td colspan="6" style="text-align:center;">Data barang kosong.</td></tr>`;
+            } 
+            else if (jenis === 'Pergerakan') {
+                document.getElementById('printJenisLaporan').innerText = "LAPORAN PERGERAKAN INVENTORI";
+                head.innerHTML = `<tr><th style="text-align:left;">Waktu</th><th style="text-align:left;">SKU</th><th style="text-align:left;">Referensi</th><th style="text-align:center;">Arus</th><th style="text-align:center;">Qty</th><th style="text-align:left;">Keterangan</th></tr>`;
+                databasePergerakan.forEach(p => { 
+                    body.innerHTML += `<tr><td style="text-align:left;">${p.waktu}</td><td style="text-align:left;">${p.kode}</td><td style="text-align:left;">${p.referensi}</td><td style="text-align:center; font-weight:bold;">${p.arus}</td><td style="text-align:center; font-weight:bold;">${p.qty}</td><td style="text-align:left;">${p.keterangan}</td></tr>`; 
+                });
+                if(body.innerHTML === '') body.innerHTML = `<tr><td colspan="6" style="text-align:center;">Belum ada rekam pergerakan.</td></tr>`;
+            }
+            else if(jenis === 'Kritis') {
                 document.getElementById('printJenisLaporan').innerText = "EXCEPTION REPORT (STOK KRITIS)";
                 head.innerHTML = `<tr><th style="text-align:left;">Kode SKU</th><th style="text-align:left;">Nama Barang</th><th style="text-align:left;">Kategori</th><th style="text-align:right;">Sisa Stok</th></tr>`;
                 databaseBarang.forEach(b => { if(b.stok < 15) body.innerHTML += `<tr><td style="text-align:left;">${b.kode}</td><td style="text-align:left;">${b.nama}</td><td style="text-align:left;">${b.kategori}</td><td style="text-align:right; font-weight:bold;">${b.stok} Unit</td></tr>`; });
                 if(body.innerHTML === '') body.innerHTML = `<tr><td colspan="4" style="text-align:center;">Tidak ada barang dengan stok kritis.</td></tr>`;
-            } else if (jenis === 'Penjualan') {
+            } 
+            else if (jenis === 'Penjualan') {
                 document.getElementById('printJenisLaporan').innerText = "LAPORAN JURNAL PENJUALAN";
                 head.innerHTML = `<tr><th style="text-align:left;">Waktu</th><th style="text-align:left;">ID Transaksi</th><th style="text-align:left;">Metode</th><th style="text-align:right;">Omzet Netto</th><th style="text-align:right;">Total Laba</th></tr>`;
                 let grandTotal = 0; let grandLaba = 0;
@@ -1230,22 +1293,33 @@
             window.print(); areaCetak.style.display = 'none'; document.getElementById('printWaktu').innerText = ''; 
         }
 
-        // --- EXPORT PDF (jsPDF + autoTable) ---
+        // --- EXPORT PDF (jsPDF + autoTable) DIPERLUAS ---
         window.eksporPDF = function(jenis) {
             const { jsPDF } = window.jspdf; const doc = new jsPDF();
             
             doc.setFontSize(16);
-            doc.text(`Laporan ${jenis === 'Kritis' ? 'Stok Kritis' : 'Penjualan'} - ${configToko.nama}`, 14, 20);
+            doc.text(`Laporan ${jenis} - ${configToko.nama}`, 14, 20);
             doc.setFontSize(10); doc.setTextColor(100);
             doc.text(`Dicetak pada: ${new Date().toLocaleString('id-ID')}`, 14, 28);
 
             let head = []; let body = [];
             
-            if (jenis === 'Kritis') {
+            if (jenis === 'Master') {
+                head = [['Kode SKU', 'Nama Barang', 'Kategori', 'HPP (Rp)', 'Harga Jual (Rp)', 'Stok Aktual']];
+                databaseBarang.forEach(b => { body.push([b.kode, b.nama, b.kategori, (b.hargaBeli || 0).toLocaleString('id-ID'), b.harga.toLocaleString('id-ID'), `${b.stok} Unit`]); });
+                if (body.length === 0) return Swal.fire('Info', 'Master data barang kosong.', 'info');
+            } 
+            else if (jenis === 'Pergerakan') {
+                head = [['Waktu', 'SKU', 'Referensi', 'Arus', 'Qty', 'Keterangan']];
+                databasePergerakan.forEach(p => { body.push([p.waktu, p.kode, p.referensi, p.arus, p.qty, p.keterangan]); });
+                if (body.length === 0) return Swal.fire('Info', 'Belum ada log pergerakan stok.', 'info');
+            }
+            else if (jenis === 'Kritis') {
                 head = [['Kode SKU', 'Nama Barang', 'Kategori', 'Sisa Stok']];
                 databaseBarang.forEach(b => { if (b.stok < 15) body.push([b.kode, b.nama, b.kategori, `${b.stok} Unit`]); });
                 if (body.length === 0) return Swal.fire('Info', 'Tidak ada stok kritis.', 'info');
-            } else if (jenis === 'Penjualan') {
+            } 
+            else if (jenis === 'Penjualan') {
                 head = [['Waktu', 'ID Transaksi', 'Kasir', 'Metode', 'Total (Rp)', 'Laba (Rp)']];
                 let grandTotal = 0; let grandLaba = 0;
                 databaseTransaksi.forEach(t => {
@@ -1264,18 +1338,33 @@
             doc.save(`Laporan_${jenis}_${window.getTanggalHariIni().replace(/\//g, '-')}.pdf`);
         }
 
-        // --- EXPORT EXCEL (SheetJS) ---
+        // --- EXPORT EXCEL (SheetJS) DIPERLUAS ---
         window.eksporExcel = function(jenis) {
             let exportData = [];
 
-            if (jenis === 'Kritis') {
+            if (jenis === 'Master') {
+                if(databaseBarang.length === 0) return Swal.fire('Info', 'Data barang kosong.', 'info');
+                exportData = databaseBarang.map(b => ({
+                    "Kode SKU": b.kode, "Nama Barang": b.nama, "Kategori": b.kategori,
+                    "Modal / HPP (Rp)": (b.hargaBeli || 0), "Harga Jual (Rp)": b.harga, "Sisa Stok Fisik": b.stok
+                }));
+            }
+            else if (jenis === 'Pergerakan') {
+                if(databasePergerakan.length === 0) return Swal.fire('Info', 'Log pergerakan kosong.', 'info');
+                exportData = databasePergerakan.map(p => ({
+                    "Waktu Pencatatan": p.waktu, "Kode SKU": p.kode, "Referensi Transaksi": p.referensi,
+                    "Arus Logistik": p.arus, "Kuantitas (Qty)": p.qty, "Keterangan Audit": p.keterangan
+                }));
+            }
+            else if (jenis === 'Kritis') {
                 const dataKritis = databaseBarang.filter(b => b.stok < 15);
                 if(dataKritis.length === 0) return Swal.fire('Info', 'Tidak ada stok kritis.', 'info');
                 exportData = dataKritis.map(b => ({
                     "Kode SKU": b.kode, "Nama Barang": b.nama, "Kategori": b.kategori,
                     "Modal / HPP (Rp)": (b.hargaBeli || 0), "Harga Jual (Rp)": b.harga, "Sisa Stok Fisik": b.stok
                 }));
-            } else if (jenis === 'Penjualan') {
+            } 
+            else if (jenis === 'Penjualan') {
                 if(databaseTransaksi.length === 0) return Swal.fire('Info', 'Belum ada transaksi.', 'info');
                 exportData = databaseTransaksi.map(t => ({
                     "Waktu": t.waktuLengkap, "ID Transaksi": t.id, "Kasir": t.kasir || "-",
