@@ -75,7 +75,7 @@
         .btn-success-minimal { background-color: #166534; color: #fff; border: none; border-radius: 6px; padding: 10px 16px; font-weight: 500;}
         .btn-success-minimal:hover { background-color: #14532D; color: #fff; }
         
-        .status-awan { position: fixed; top: 15px; right: 20px; font-size: 0.85rem; color: #166534; background: #DCFCE7; padding: 8px 15px; border-radius: 20px; font-weight: bold; z-index: 9999; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .status-awan { position: fixed; top: 15px; right: 20px; font-size: 0.85rem; color: #166534; background: #DCFCE7; padding: 8px 15px; border-radius: 20px; font-weight: bold; z-index: 9999; box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: flex; align-items: center; }
         .user-badge { background-color: #E2E8F0; color: #0F172A; padding: 4px 10px; border-radius: 12px; font-size: 0.75rem; margin-left: 10px; font-weight: 600; text-transform: uppercase;}
         
         .timeline-swal { border-left: 2px solid #E2E8F0; padding-left: 20px; list-style: none; text-align: left; margin-top: 10px; padding-bottom: 10px;}
@@ -87,7 +87,6 @@
         
         .kbd-shortcut { background-color: #E2E8F0; border-radius: 4px; padding: 2px 6px; font-size: 0.75rem; font-family: monospace; border: 1px solid #CBD5E1; color: #475569; margin-left: 5px; }
 
-        /* Media Queries untuk Mobile Responsiveness */
         @media (max-width: 992px) {
             .sidebar { transform: translateX(-100%); }
             .sidebar.show { transform: translateX(0); }
@@ -99,7 +98,6 @@
             .nav-pills { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 10px; }
         }
 
-        /* CSS Khusus Thermal Printer (Struk Kasir 80mm/58mm) */
         @media print {
             body { font-family: "Courier New", Courier, monospace; background-color: white; width: 100%; margin: 0; padding: 0; color: #000; font-size: 12px; }
             .sidebar, .btn, .input-group, form, .status-awan, #scanBarcodeContainer, .nav-pills, .card, .mobile-header, .header-title { display: none !important; border: none; box-shadow: none; }
@@ -151,7 +149,8 @@
 
         <div class="status-awan">
             <i class="fas fa-cloud-check me-1 d-none d-md-inline"></i> Online 
-            <span id="roleDisplay" class="user-badge">Role</span>
+            <span id="liveClock" class="ms-2 fw-normal d-none d-md-inline border-start border-success ps-2" style="font-size: 0.8rem;">--:--:--</span>
+            <span id="roleDisplay" class="user-badge ms-2">Role</span>
         </div>
 
         <div class="sidebar" id="sidebarMenu">
@@ -473,7 +472,7 @@
                                 </div>
                                 
                                 <div id="divUangBayar" class="mb-3">
-                                    <label class="text-muted fw-bold mb-2" style="font-size: 0.8rem;">UANG DITERIMA (Rp)</label>
+                                    <label class="text-muted fw-bold mb-2" style="font-size: 0.8rem;">UANG DITERIMA (Rp) <span class="kbd-shortcut ms-2">F9</span></label>
                                     <input type="number" id="inputUangBayar" class="form-control bg-white text-end fw-bold fs-5" placeholder="0" min="0" onkeyup="window.hitungKembalian()" onchange="window.hitungKembalian()">
                                     <div id="teksKembalian" class="mt-2 text-success fw-bold text-end d-none" style="font-size: 1.1rem;">Kembalian: Rp 0</div>
                                 </div>
@@ -560,9 +559,10 @@
             </div>
 
             <div id="pengaturan" class="content-section">
-                <h2 class="header-title">Pengaturan Profil Entitas</h2>
-                <div class="card">
+                <h2 class="header-title">Pengaturan Sistem</h2>
+                <div class="card mb-4">
                     <div class="card-body p-4">
+                        <h5 class="mb-4"><i class="fas fa-store me-2"></i>Profil Entitas (Toko)</h5>
                         <form onsubmit="event.preventDefault(); window.simpanPengaturan();">
                             <div class="mb-3">
                                 <label class="text-muted mb-1" style="font-size: 0.85rem;">Nama Bisnis / Toko</label>
@@ -576,6 +576,16 @@
                         </form>
                     </div>
                 </div>
+
+                <div class="card border-danger">
+                    <div class="card-body p-4">
+                        <h5 class="text-danger fw-bold mb-3"><i class="fas fa-exclamation-triangle me-2"></i>Zona Berbahaya (Factory Reset)</h5>
+                        <p class="text-muted mb-4" style="font-size: 0.9rem;">
+                            Fungsi ini akan <b>MENGHAPUS SELURUH DATA</b> (Master Barang, Riwayat Transaksi, dan Pergerakan Inventori) yang tersimpan di Cloud Server secara permanen. Tindakan ini tidak dapat dibatalkan.
+                        </p>
+                        <button class="btn btn-danger" onclick="window.konfirmasiReset()"><i class="fas fa-trash-alt me-2"></i> Hapus & Reset Semua Data</button>
+                    </div>
+                </div>
             </div>
 
         </div>
@@ -583,7 +593,8 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        // NEW: Diperbarui dengan meng-import metode 'increment' dari firebase-firestore.js
+        import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, updateDoc, getDocs, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyB_H1OzVy0ElJf6QEbmrHgsC_i7Vvi0Bbo",
@@ -606,6 +617,28 @@
         let chartOmzetInst = null;
         let activeUserRole = sessionStorage.getItem('Active_Role') || null;
 
+        // NEW: Efek Audio Beep saat Scanner berjalan (Pure Vanilla JS Web Audio API)
+        window.playBeep = function() {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                const gainNode = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(800, ctx.currentTime);
+                gainNode.gain.setValueAtTime(0.1, ctx.currentTime); // Volume ringan
+                osc.connect(gainNode);
+                gainNode.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.1); // Durasi 0.1 detik
+            } catch (e) { console.log('Audio error:', e); }
+        }
+
+        // NEW: Real-Time Jam Digital
+        setInterval(() => {
+            const elClock = document.getElementById('liveClock');
+            if(elClock) elClock.innerText = new Date().toLocaleTimeString('id-ID');
+        }, 1000);
+
         window.getTanggalHariIni = () => {
             return new Intl.DateTimeFormat('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(new Date());
         };
@@ -615,13 +648,11 @@
             return isNaN(val) ? "Rp 0" : "Rp " + val.toLocaleString('id-ID');
         };
 
-        // --- MOBILE SIDEBAR TOGGLE ---
         window.toggleMenu = function() {
             document.getElementById('sidebarMenu').classList.toggle('show');
             document.getElementById('sidebarOverlay').classList.toggle('show');
         }
 
-        // --- SISTEM LOGIN LOGIC ---
         window.prosesLogin = function() {
             const user = document.getElementById('inpUsername').value;
             const pass = document.getElementById('inpPassword').value;
@@ -634,7 +665,13 @@
             }
         }
 
-        window.prosesLogout = function() {
+        window.prosesLogout = function(force = false) {
+            if (force === true) {
+                sessionStorage.removeItem('Active_Role'); activeUserRole = null;
+                document.getElementById('appContainer').style.display = 'none'; document.getElementById('loginScreen').style.display = 'flex';
+                document.getElementById('inpUsername').value = ''; document.getElementById('inpPassword').value = '';
+                return;
+            }
             Swal.fire({
                 title: 'Keluar Sistem?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#0F172A', confirmButtonText: 'Keluar'
             }).then((result) => {
@@ -679,7 +716,6 @@
             document.getElementById(tabId).classList.add('active');
         }
 
-        // --- FIREBASE LISTENERS ---
         onSnapshot(collection(db, "MasterBarang"), (snapshot) => {
             databaseBarang = []; let kategoriSet = new Set();
             snapshot.forEach(doc => {
@@ -705,7 +741,6 @@
             renderKartuStok();
         });
 
-        // --- UI RENDERERS ---
         window.updateFilterKategori = function(kategoriArray) {
             const selectFilter = document.getElementById('filterKategori');
             const dataList = document.getElementById('kategoriList');
@@ -857,7 +892,6 @@
             if(databasePergerakan.length === 0) tabel.innerHTML = '<tr><td colspan="6" class="text-center">Buku besar persediaan masih kosong.</td></tr>';
         }
 
-        // --- CRUD MASTER DATA (DIPERBAIKI) ---
         window.catatPergerakan = async function(kodeSku, referensi, arus, qty, keterangan) {
             await addDoc(collection(db, "Pergerakan"), { waktu: new Date().toLocaleString('id-ID'), kode: kodeSku, referensi: referensi, arus: arus, qty: qty, keterangan: keterangan, timestamp: Date.now() });
         }
@@ -870,13 +904,11 @@
                 kategori: document.getElementById('inputKategori').value, 
                 hargaBeli: parseInt(document.getElementById('inputHargaBeli').value), 
                 harga: parseInt(document.getElementById('inputHargaJual').value)
-                // Stok di-handle secara terpisah tergantung mode (Baru vs Edit)
             };
             
             const btnSubmit = document.getElementById('btnSubmit'); btnSubmit.disabled = true;
             try {
                 if(!editDocId) {
-                    // MODE TAMBAH BARU
                     dataForm.stok = parseInt(document.getElementById('inputStok').value);
                     if(dataForm.hargaBeli < 0 || dataForm.harga < 0 || dataForm.stok < 0) { btnSubmit.disabled = false; return Swal.fire('Peringatan', 'Nominal negatif tidak valid!', 'warning'); }
                     if(databaseBarang.find(b => b.kode === dataForm.kode)) { btnSubmit.disabled = false; return Swal.fire('Gagal!', 'Kode SKU sudah terdaftar.', 'error'); }
@@ -886,7 +918,6 @@
                     await window.catatPergerakan(dataForm.kode, "SYS-INIT", "MASUK", dataForm.stok, "Pencatatan SKU Baru");
                     Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'SKU Tersimpan', showConfirmButton: false, timer: 1500 });
                 } else {
-                    // MODE EDIT (Stok tidak diperbarui di sini, murni mengubah harga/nama/kategori)
                     if(dataForm.hargaBeli < 0 || dataForm.harga < 0) { btnSubmit.disabled = false; return Swal.fire('Peringatan', 'Nominal negatif tidak valid!', 'warning'); }
                     
                     await updateDoc(doc(db, "MasterBarang", editDocId), {
@@ -907,7 +938,6 @@
             document.getElementById('inputKode').value = b.kode; document.getElementById('inputNama').value = b.nama; document.getElementById('inputKategori').value = b.kategori; 
             document.getElementById('inputHargaBeli').value = b.hargaBeli || 0; document.getElementById('inputHargaJual').value = b.harga; document.getElementById('inputStok').value = b.stok;
             
-            // KUNCI INPUT KODE & STOK (Hanya Hub Inventori yang boleh mengubah stok barang *existing*)
             document.getElementById('inputKode').setAttribute('readonly', true); 
             document.getElementById('inputStok').setAttribute('readonly', true);
             document.getElementById('inputStok').title = "Gunakan form Stock Opname di menu Hub Inventori untuk menyesuaikan stok fisik.";
@@ -918,7 +948,6 @@
 
         window.batalEdit = function() {
             editDocId = null; document.getElementById('formBarang').reset(); 
-            // LEPASKAN KUNCI INPUT
             document.getElementById('inputKode').removeAttribute('readonly');
             document.getElementById('inputStok').removeAttribute('readonly');
             document.getElementById('inputStok').removeAttribute('title');
@@ -932,7 +961,6 @@
             if (res.isConfirmed) await deleteDoc(doc(db, "MasterBarang", docId));
         }
 
-        // --- NEW INVENTORY LOGIC (RESTOCK & OPNAME) ---
         window.prosesBarangMasuk = async function() {
             const kode = document.getElementById('invPilihBarangRestock').value;
             const supplier = document.getElementById('invSupplier').value;
@@ -945,7 +973,8 @@
             const btn = document.getElementById('btnRestock'); btn.disabled = true;
             try {
                 const barang = databaseBarang.find(b => b.kode === kode);
-                await updateDoc(doc(db, "MasterBarang", barang.id), { stok: barang.stok + qty });
+                // FIX BUG UPDATE DOC: Menggunakan atomic increment agar tidak tabrakan (Race Condition)
+                await updateDoc(doc(db, "MasterBarang", barang.id), { stok: increment(qty) });
                 
                 const alasan = `Restock dari ${supplier} ${ket ? `(${ket})` : ''}`;
                 await window.catatPergerakan(kode, faktur, "MASUK", qty, alasan);
@@ -980,7 +1009,7 @@
             
             const btn = document.getElementById('btnOpname'); btn.disabled = true;
             try {
-                await updateDoc(doc(db, "MasterBarang", barang.id), { stok: stokFisik });
+                await updateDoc(doc(db, "MasterBarang", barang.id), { stok: stokFisik }); // Opname menetapkan stok absolut
                 
                 const arus = selisih > 0 ? "MASUK" : "KELUAR";
                 const qtyAdjust = Math.abs(selisih);
@@ -1024,7 +1053,6 @@
             Swal.fire({ html: html, width: 600, showConfirmButton: true, confirmButtonColor: '#0F172A', confirmButtonText: 'Tutup Riwayat' });
         }
 
-        // --- TRANSAKSI KASIR LOGIC ---
         window.prosesScanBarcode = function(event) {
             if(event.key === 'Enter') {
                 const kodeScan = document.getElementById('inputScanBarcode').value.trim();
@@ -1059,6 +1087,10 @@
                     qty: qty, subtotal: barangDb.harga * qty 
                 });
             }
+            
+            // NEW: Putar efek suara saat barang masuk keranjang
+            window.playBeep();
+
             document.getElementById('pilihBarangKasir').value = ""; document.getElementById('qtyKasir').value = 1; window.renderKeranjang();
             
             if(window.innerWidth > 992) document.getElementById('inputScanBarcode').focus();
@@ -1158,7 +1190,8 @@
                 for (const item of keranjangBelanja) {
                     let brgAsli = databaseBarang.find(b => b.kode === item.kode);
                     if(brgAsli) {
-                        await updateDoc(doc(db, "MasterBarang", brgAsli.id), { stok: brgAsli.stok - item.qty });
+                        // FIX BUG UPDATE DOC: atomic update khusus untuk menghindari bentrok transaksi antar kasir
+                        await updateDoc(doc(db, "MasterBarang", brgAsli.id), { stok: increment(-item.qty) });
                         await window.catatPergerakan(item.kode, idTrx, "KELUAR", item.qty, `Penjualan Kasir (${metodePembayaran}) O: ${activeUserRole}`);
                     }
                     totalModal += (item.hargaBeli * item.qty);
@@ -1194,7 +1227,7 @@
             btnProses.disabled = false; btnProses.innerHTML = originalBtnText;
         }
 
-        // --- SISTEM SHORTCUT KEYBOARD KASIR ---
+        // SISTEM SHORTCUT KEYBOARD KASIR (DIPERBARUI DENGAN F9)
         document.addEventListener('keydown', (e) => {
             if (activeUserRole && document.getElementById('transaksi').classList.contains('active')) {
                 if (e.key === 'F2') {
@@ -1205,11 +1238,14 @@
                 } else if (e.key === 'F8') {
                     e.preventDefault();
                     if (!document.getElementById('btnProsesTrx').disabled) window.prosesTransaksi();
+                } else if (e.key === 'F9') {
+                    e.preventDefault();
+                    const method = document.getElementById('metodeBayar').value;
+                    if (method === 'Tunai') document.getElementById('inputUangBayar').focus();
                 }
             }
         });
 
-        // --- PENGATURAN & REPORTING ---
         window.muatPengaturanToko = function() {
             document.getElementById('brandSidebar').innerHTML = `<i class="fas fa-store me-2"></i> ${configToko.nama}`;
             document.getElementById('mobileBrandName').innerHTML = `<i class="fas fa-store text-primary me-2"></i> ${configToko.nama}`;
@@ -1228,7 +1264,82 @@
             Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Profil Diperbarui', showConfirmButton: false, timer: 1500 });
         }
 
-        // --- EKSPOR NATIVE / STRUK (DIPERLUAS UNTUK LAPORAN BARU) ---
+        window.konfirmasiReset = async function() {
+            if(activeUserRole !== 'admin') return Swal.fire('Ditolak!', 'Fitur ini khusus untuk Admin.', 'error');
+
+            const { value: formValues } = await Swal.fire({
+                title: 'Verifikasi Kredensial',
+                html:
+                    '<p style="font-size: 14px; margin-bottom: 20px;">Masukkan Username dan Password Admin untuk memberikan hak akses penghapusan permanen ke Database.</p>' +
+                    '<input id="swal-input1" class="swal2-input form-control mb-3" placeholder="Username Admin">' +
+                    '<input id="swal-input2" type="password" class="swal2-input form-control" placeholder="Password Admin">',
+                focusConfirm: false,
+                showCancelButton: true,
+                confirmButtonText: '<i class="fas fa-exclamation-triangle"></i> Verifikasi & Hapus',
+                confirmButtonColor: '#d33',
+                cancelButtonText: 'Batal',
+                preConfirm: () => {
+                    const u = document.getElementById('swal-input1').value;
+                    const p = document.getElementById('swal-input2').value;
+                    if (!u || !p) { Swal.showValidationMessage('Username dan Password wajib diisi'); }
+                    return { u, p }
+                }
+            });
+
+            if (formValues) {
+                if (formValues.u === 'admin' && formValues.p === 'admin123') {
+                    window.eksekusiResetTotal();
+                } else {
+                    Swal.fire('Otentikasi Gagal', 'Username atau Password yang Anda masukkan salah.', 'error');
+                }
+            }
+        }
+
+        window.eksekusiResetTotal = async function() {
+            Swal.fire({
+                title: 'Sedang Membersihkan Database...',
+                text: 'Harap jangan menutup jendela browser ini. Menghapus seluruh entri di Server...',
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                didOpen: () => { Swal.showLoading(); }
+            });
+
+            try {
+                const snapBarang = await getDocs(collection(db, "MasterBarang"));
+                const janjiHapusBarang = [];
+                snapBarang.forEach(d => janjiHapusBarang.push(deleteDoc(doc(db, "MasterBarang", d.id))));
+                await Promise.all(janjiHapusBarang);
+
+                const snapTrx = await getDocs(collection(db, "Transaksi"));
+                const janjiHapusTrx = [];
+                snapTrx.forEach(d => janjiHapusTrx.push(deleteDoc(doc(db, "Transaksi", d.id))));
+                await Promise.all(janjiHapusTrx);
+
+                const snapPergerakan = await getDocs(collection(db, "Pergerakan"));
+                const janjiHapusPergerakan = [];
+                snapPergerakan.forEach(d => janjiHapusPergerakan.push(deleteDoc(doc(db, "Pergerakan", d.id))));
+                await Promise.all(janjiHapusPergerakan);
+
+                localStorage.removeItem('DB_Config_Clean');
+                configToko = { nama: "Madura Mart", alamat: "Jl. Ir. Sutami No.36 A, Surakarta" };
+                window.muatPengaturanToko();
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Sistem Berhasil Direset!',
+                    text: 'Seluruh data telah dihapus. Aplikasi akan otomatis logout untuk menyegarkan sistem.',
+                    confirmButtonColor: '#0F172A',
+                    confirmButtonText: 'Kembali ke Login'
+                }).then(() => {
+                    window.prosesLogout(true);
+                });
+
+            } catch (error) {
+                console.error("Error menghapus data: ", error);
+                Swal.fire('Terjadi Kesalahan!', 'Gagal mereset data. Periksa koneksi internet Anda.', 'error');
+            }
+        }
+
         window.cetakStruk = function(idTrx, cart, subtotal, diskon, totalAkhir, metode, waktu, uangBayar = 0, kembalian = 0) {
             const areaCetak = document.getElementById('areaCetak'); const head = document.getElementById('cetakHead'); const body = document.getElementById('cetakBody');
             document.getElementById('printJenisLaporan').innerText = "STRUK PEMBELIAN";
@@ -1293,7 +1404,6 @@
             window.print(); areaCetak.style.display = 'none'; document.getElementById('printWaktu').innerText = ''; 
         }
 
-        // --- EXPORT PDF (jsPDF + autoTable) DIPERLUAS ---
         window.eksporPDF = function(jenis) {
             const { jsPDF } = window.jspdf; const doc = new jsPDF();
             
@@ -1332,13 +1442,12 @@
 
             doc.autoTable({
                 startY: 35, head: head, body: body, theme: 'grid',
-                headStyles: { fillColor: [37, 99, 235] }, /* Biru Bootstrap */
+                headStyles: { fillColor: [37, 99, 235] },
                 styles: { fontSize: 9 }
             });
             doc.save(`Laporan_${jenis}_${window.getTanggalHariIni().replace(/\//g, '-')}.pdf`);
         }
 
-        // --- EXPORT EXCEL (SheetJS) DIPERLUAS ---
         window.eksporExcel = function(jenis) {
             let exportData = [];
 
@@ -1375,7 +1484,6 @@
 
             const worksheet = XLSX.utils.json_to_sheet(exportData);
             
-            /* Penyesuaian Lebar Kolom Excel */
             const wscols = Object.keys(exportData[0]).map(key => ({ wch: Math.max(key.length, 15) }));
             worksheet['!cols'] = wscols;
 
@@ -1384,7 +1492,6 @@
             XLSX.writeFile(workbook, `Laporan_${jenis}_${window.getTanggalHariIni().replace(/\//g, '-')}.xlsx`);
         }
 
-        // INIT
         window.muatPengaturanToko();
         if(activeUserRole) window.jalankanAplikasi();
     </script>
